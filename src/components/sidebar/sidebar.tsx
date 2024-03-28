@@ -1,26 +1,43 @@
-import React from "react";
-import { Button, Flex } from "@chakra-ui/react";
-import SidebarMain from "./sidebar-main";
+import React from 'react';
+import { Box, Flex, Text, VStack, IconButton, useDisclosure, Divider } from '@chakra-ui/react';
+import { FiMenu, FiHome, FiSettings, FiUsers } from 'react-icons/fi';
+import SidebarMain from './sidebar-main';
 
-const Sidebar = () => {
+const Sidebar: React.FC = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-    
-    return (
-            <Flex
-                as='aside'
-                maxW='450px'
-                h='full'
-                bg='white'
-                alignItems='start'
-                padding={6}
-                flexDirection='column'
-                justifyContent='space-between'
-                transition='ease-in-out .2s'
-                borderRadius='3xl'
-            >
-                <SidebarMain />
-            </Flex>
-    )   
-}
+  return (
+    <>
+      <Box
+        bg="gray.800"
+        color="white"
+        w="64"
+        h="100vh"
+        pos="fixed"
+        top="0"
+        left="0"
+        zIndex={4}
+        shadow="md"
+      >
+        <Flex justify="space-between" align="center" p="4">
+          <IconButton
+            aria-label="Toggle Sidebar"
+            icon={<FiMenu />}
+            onClick={isOpen ? onClose : onOpen}
+            display={{ base: 'block', md: 'none' }}
+          />
+          <Text fontSize="xl" fontWeight="bold">My App</Text>
+          <Box display={{ base: 'none', md: 'block' }} />
+        </Flex>
 
-export default Sidebar
+        <Divider />
+
+        <VStack spacing="2" p="4" align="stretch">
+        <SidebarMain /> 
+        </VStack>
+      </Box>
+    </>
+  );
+};
+
+export default Sidebar;

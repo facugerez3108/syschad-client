@@ -15,7 +15,6 @@ const MainContainer: React.FC<MainContainerProps> = ({ children }) => {
             justifyContent="center"
             flexDirection="column"
             position="relative"
-            borderRadius="3xl"
         >
             {children}
         </Flex>
