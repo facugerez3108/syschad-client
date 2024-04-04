@@ -1,6 +1,5 @@
-import React from 'react';
 import { Box, Flex, Text, VStack, IconButton, useDisclosure, Divider } from '@chakra-ui/react';
-import { FiMenu, FiHome, FiSettings, FiUsers } from 'react-icons/fi';
+import { FiMenu } from 'react-icons/fi';
 import SidebarMain from './sidebar-main';
 
 const Sidebar: React.FC = () => {
@@ -11,7 +10,7 @@ const Sidebar: React.FC = () => {
       <Box
         bg="gray.800"
         color="white"
-        w="64"
+        w="90"
         h="100vh"
         pos="fixed"
         top="0"
@@ -33,7 +32,7 @@ const Sidebar: React.FC = () => {
         <Divider />
 
         <VStack spacing="2" p="4" align="stretch">
-        <SidebarMain /> 
+              <SidebarMain />
         </VStack>
       </Box>
     </>
