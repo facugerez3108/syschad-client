@@ -1,102 +1,133 @@
 import { useState, useEffect } from "react";
-import { List, ListItem, Avatar } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { List, ListItem, Avatar, Text, Link } from "@chakra-ui/react";
+import { getUserRole} from "../../actions/user-actions";
 
-const SidebarMain: React.FC = () => {
-    const [isLogged, setIsLogged] = useState<boolean>(false);
-    const [randomAvatar, setRandomAvatar] = useState<string | null>(null);
+const adminItems = [
+  {
+    type: "link",
+    name: "Home",
+    ref: "/",
+  },
+  {
+    type: "link",
+    name: "Gestión de Materias",
+    ref: "/",
+  },
+  {
+    type: "link",
+    name: "Gestión de Asignaturas",
+    ref: "/",
+  },
+  {
+    type: "link",
+    name: "Gestión de Alumnos",
+    ref: "/",
+  },
+  {
+    type: "link",
+    name: "Administradores",
+    ref: "/",
+  },
+  {
+    type: "link",
+    name: "Iniciar Sesión",
+    ref: "/signin",
+  },
+  {
+    type: "link",
+    name: "Cerrar Sesión",
+    ref: "/",
+  },
+];
 
-    useEffect(() => {
-        const logged = localStorage.getItem('logged');
-        setIsLogged(logged === 'true');
+const userItems = [
+  {
+    type: "link",
+    name: "Materias del Plan",
+    ref: "/",
+  },
+  {
+    type: "link",
+    name: "Calificaciones",
+    ref: "/",
+  },
+  {
+    type: "link",
+    name: "Inscripción a Materias",
+    ref: "/",
+  },
+  {
+    type: "link",
+    name: "Mis Datos",
+    ref: "/",
+  },
+  {
+    type: "link",
+    name: "Iniciar Sesión",
+    ref: "/signin",
+  },
+  {
+    type: "link",
+    name: "Cerrar Sesión",
+    ref: "/",
+  },
+];
 
-        // Lógica para cargar un avatar aleatorio si el usuario está autenticado
-        if (logged === 'true') {
-            fetchRandomAvatar();
-        }
-    }, []);
+export const SidebarMain = () => {
+  const [isLogged, setIsLogged] = useState<boolean>(false);
+  const [userId, setUserId] = useState<number | null>(null);
+  const [userRole, setUserRole] = useState<string>("");
 
-    const fetchRandomAvatar = () => {
-        // Lógica para obtener un avatar aleatorio, puede ser una llamada a una API o un conjunto de avatares predefinidos
-        // En este ejemplo, se establece un avatar predefinido
-        const avatars: string[] = [
-            "https://via.placeholder.com/150",
-            "https://via.placeholder.com/150",
-            "https://via.placeholder.com/150"
-        ];
-        const randomIndex = Math.floor(Math.random() * avatars.length);
-        setRandomAvatar(avatars[randomIndex]);
-    };
+  useEffect(() => {
+    const logged = localStorage.getItem("logged");
+    setIsLogged(logged === "true");
 
-    const items = [
-        {
-            type: "link",
-            name: "Home",
-            ref: "/"
-        },
-        {
-            type: "link",
-            name: "Gestión de Materias",
-            ref: "/"
-        },
-        {
-            type: "link",
-            name: "Gestión de Asignaturas",
-            ref: "/"
-        },
-        {
-            type: "link",
-            name: "Gestión de Alumnos",
-            ref: "/"
-        },
-        {
-            type: "link",
-            name: "Administradores",
-            ref: "/"
-        },
-        {
-            type: "link",
-            name: "Nose",
-            ref: "/"
-        },
-        {
-            type: "footer",
-            name: "Iniciar Sesión",
-            ref: "/signin"
-        },
-        {
-            type: "footer",
-            name: "Cerrar Sesión",
-            ref: "/"
-        }
-    ];
+    if(isLogged) {
+      const token = localStorage.getItem("token");
+      console.log(token);
+      if (token) {
+        getUserData(token);
+      }
+    }
+  }, [isLogged]);
 
-    return (
-        <List w='full' my='8' mx='6' flex='items-center'>
-            {items.map((item, index) => (
-                <ListItem
-                    my='2'
-                    fontSize='lg'
-                    fontWeight='bold'
-                    listStyleType='none'
-                    listStylePosition='inside'
-                    key={index}
-                >
-                    {item.type === "link" ? (
-                        <Link to={item.ref}>{item.name}</Link>
-                    ) : (
-                        <>
-                            {isLogged && randomAvatar && (
-                                <Avatar src={randomAvatar} mr="2" />
-                            )}
-                            <Link to={item.ref}>{item.name}</Link>
-                            <hr />
-                        </>
-                    )}
-                </ListItem>
-            ))}
-        </List>
-    );
+  useEffect(() => {
+      if(userRole !== ""){
+        setMenuItems(getMenuItemsForUserRole(userRole));
+      }
+  }, [userRole])
+
+  const [menuItems, setMenuItems] = useState<any[]>([]);
+
+  const getMenuItemsForUserRole = (role: string) => {
+    return role === "ADMIN" ? adminItems : userItems;
+  };
+
+  const getUserData = async (token: string) => {
+    try {
+      const response = await getUserRole(token); 
+      setUserId(response.id); 
+      setUserRole(response.role); 
+    } catch (error) {
+      console.error("Error obteniendo los datos del usuario:", error);
+    }
+  };
+
+  return (
+    <List w="full" my="8">
+      {isLogged && menuItems.length > 0 && menuItems.map((item, index) => (
+      <ListItem key={index}>
+        <Link
+          key={index}
+          href={item.ref}
+          mr={4}
+          _hover={{ textDecoration: "underline" }}
+        >
+          {item.name}
+        </Link>
+        <Avatar src="https://bit.ly/sage-adebayo"/>
+      </ListItem>
+    ))}
+    </List>
+  );
 };
-
-export default SidebarMain;
