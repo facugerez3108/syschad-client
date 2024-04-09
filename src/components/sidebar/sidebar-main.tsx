@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { List, ListItem, Avatar, Text, Link } from "@chakra-ui/react";
-import { getUserRole} from "../../actions/user-actions";
+import { List, ListItem, Avatar, Text, Button, Link } from "@chakra-ui/react";
+import { getUserRole } from "../../actions/user-actions";
+import { redirect } from "react-router-dom";
 
 const adminItems = [
   {
@@ -75,59 +76,71 @@ const userItems = [
 
 export const SidebarMain = () => {
   const [isLogged, setIsLogged] = useState<boolean>(false);
-  const [userId, setUserId] = useState<number | null>(null);
+  const [menuItems, setMenuItems] = useState<any[]>([]);
   const [userRole, setUserRole] = useState<string>("");
 
   useEffect(() => {
     const logged = localStorage.getItem("logged");
     setIsLogged(logged === "true");
+  }, []);
 
-    if(isLogged) {
+  useEffect(() => {
+    if (isLogged) {
       const token = localStorage.getItem("token");
       console.log(token);
       if (token) {
         getUserData(token);
+        console.log(token);
+      } else {
+        setMenuItems(userItems);
       }
     }
   }, [isLogged]);
 
-  useEffect(() => {
-      if(userRole !== ""){
-        setMenuItems(getMenuItemsForUserRole(userRole));
-      }
-  }, [userRole])
-
-  const [menuItems, setMenuItems] = useState<any[]>([]);
-
-  const getMenuItemsForUserRole = (role: string) => {
-    return role === "ADMIN" ? adminItems : userItems;
-  };
-
   const getUserData = async (token: string) => {
     try {
-      const response = await getUserRole(token); 
-      setUserId(response.id); 
-      setUserRole(response.role); 
+      console.log('Token enviado desde el frontend:', token);
+      const response = await getUserRole(token);
+      localStorage.setItem("token", token);
+      setUserRole(response); // Actualiza el estado userRole después de obtener la respuesta
     } catch (error) {
       console.error("Error obteniendo los datos del usuario:", error);
     }
   };
 
+  useEffect(() => {
+    if (userRole !== null) {
+      setMenuItems(getMenuItemsForUserRole(userRole));
+    }
+  }, [userRole]);
+
+  const getMenuItemsForUserRole = (role: string | null) => {
+    return role === "ADMIN" ? adminItems : userItems;
+  };
+
+  const handleLoginClick = () => {
+    redirect("/signin");
+  };
+
   return (
     <List w="full" my="8">
-      {isLogged && menuItems.length > 0 && menuItems.map((item, index) => (
-      <ListItem key={index}>
-        <Link
-          key={index}
-          href={item.ref}
-          mr={4}
-          _hover={{ textDecoration: "underline" }}
-        >
-          {item.name}
-        </Link>
-        <Avatar src="https://bit.ly/sage-adebayo"/>
-      </ListItem>
-    ))}
+      {menuItems.map((item, index) => (
+        <ListItem key={index}>
+          <Link
+            key={index}
+            href={item.ref}
+            mr={4}
+            _hover={{ textDecoration: "underline" }}
+          >
+            {item.name}
+          </Link>
+        </ListItem>
+      ))}
+      {!isLogged && (
+        <ListItem>
+          <Button onClick={handleLoginClick}>Iniciar Sesión</Button>
+        </ListItem>
+      )}
     </List>
   );
 };

@@ -25,7 +25,7 @@ export const getUser = async (id: number) => {
 
 export const getUserRole = async (token: string) => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/user/role`, {
+      const response = await axios.get(`http://localhost:3000/api/users/role`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

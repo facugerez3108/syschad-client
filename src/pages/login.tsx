@@ -10,12 +10,15 @@ import {
 import Layout from "../layout/layout";
 import MainContainer from "../components/main/main-container";
 import { login } from '../actions/auth-actions'
+//import { getUserRole } from "../actions/user-actions";
+import  { LoginResponse } from '../../types';
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [userRole, setUserRole] = useState<string>("");
   const navigate = useNavigate();
   
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,14 +29,19 @@ const Login: React.FC = () => {
     setPassword(e.target.value);
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     
-    console.log("Email:", email);
-    console.log("Password:", password)
-    login(email, password);
-    navigate("/");
-    toast.success('Sesión iniciada correctamente!');
+    try {
+      const response = await login(email, password) as LoginResponse;
+      const accessToken = response.tokens.access.token; // Obtener el token de acceso de la respuesta
+      localStorage.setItem("token", accessToken); // Guardar el token de acceso en el localStorage
+      navigate("/");
+      toast.success("Sesión iniciada correctamente!");
+    } catch(error) {
+      console.error(error);
+      toast.error("Error al iniciar sesión. Por favor, verifica tus credenciales.");
+    }
   };
 
   return (
