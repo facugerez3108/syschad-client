@@ -22,12 +22,7 @@ const adminItems = [
   {
     type: "link",
     name: "Gestión de Alumnos",
-    ref: "/",
-  },
-  {
-    type: "link",
-    name: "Administradores",
-    ref: "/",
+    ref: "/gestion-alumnos",
   },
   {
     type: "link",

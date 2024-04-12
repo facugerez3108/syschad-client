@@ -10,14 +10,13 @@ export interface LoginResponse {
             expires: string // Puedes ajustar el tipo de dato según el formato de fecha y hora que estés utilizando
         }
     },
-    user: User
+    user: UserProps
 }
 
-export interface User {
+export interface UserProps {
     id: number,
     name: string,
     lastname: string,
     email: string,
-    password: string,
     role: string
 }

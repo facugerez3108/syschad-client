@@ -1,12 +1,14 @@
 import axios from 'axios';
+import { UserProps } from '../../types';
+
 
 const URL = `${process.env.REACT_SERVER_URL}/api`;
-
 
 export const getUsers = async () => {
     try {
         const response = await axios.get(`http://localhost:3000/api/users`);
-        return response.data;
+        const users = response.data.filter((user: UserProps) => user.role ===  'USER')
+        return users;
     } catch (error) {
         console.error(error);
         throw error;
