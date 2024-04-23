@@ -84,8 +84,8 @@ const UserTable = () => {
     return <p>No hay usuarios/alumnos registrados en el sistema.</p>;
   }
 
-  const onEdit = () => {
-    navigate('/gestion-alumnos/editar/')
+  const onEdit = (id: number) => {
+    navigate(`/gestion-alumnos/editar/${id}`); 
   }
 
   return (
@@ -106,7 +106,7 @@ const UserTable = () => {
                           m={2} 
                           aria-label="Editar usuario"
                           icon={<EditIcon />}
-                          onClick={() => onEdit()}
+                          onClick={() => onEdit(user.id)}
                         />
                        </Tooltip>
                        <Tooltip label="Eliminar usuario">
