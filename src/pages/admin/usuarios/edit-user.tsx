@@ -1,7 +1,7 @@
 import MainContainer from "../../../components/main/main-container";
 import { Heading } from "../../../components/ui/heading";
 import Layout from "../../../layout/layout";
-import { UserProps } from "../../../../types";
+import { useState, useEffect } from "react";
 import {
   Flex,
   FormControl,
@@ -9,8 +9,68 @@ import {
   Input,
   Button,
 } from "@chakra-ui/react";
+import { useParams, useNavigate } from "react-router-dom";
+import { getUser, editUser } from "../../../actions/user-actions";
+import { useToast } from "@chakra-ui/react";
 
 const EditUser = () => {
+  
+  const toast = useToast();
+
+  const { id } = useParams();
+  const navigate = useNavigate();
+  
+  const [ userData, setUserData ] = useState({
+    name: "",
+    lastname: "",
+    role: "",
+  });
+
+  const [ formValues, setFormValues ] = useState({
+    name: "",
+    lastname: "",
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try{
+        const data = await getUser(Number(id));
+        setUserData(data);
+        setFormValues({
+          name: data.name,
+          lastname: data.lastname,
+        });
+      }catch(error){
+        console.error("Error al obtener los usuarios", error);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormValues({ ...formValues, [name]: value });
+  }
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try{
+      editUser(Number(id), formValues.name, formValues.lastname, userData.role);
+      navigate("/gestion-alumnos");
+      toast({
+        position: "top",
+        title: "Usuario editado",
+        description: "El usuario ha sido editado correctamente.",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
+    }catch(error){
+      console.error("Error al editar el usuario", error);
+    }
+  }
+
   return (
     <Layout>
       <MainContainer>
@@ -19,9 +79,9 @@ const EditUser = () => {
           description={`Edite los datos del usuario.`}
         />
         <Flex
-          direction="column" // Establece la dirección de Flexbox como columna
-          alignItems="start" // Alinea los elementos al inicio horizontalmente
-          justifyContent="space-between" // Distribuye el espacio entre los elementos verticalmente
+          direction="column" 
+          alignItems="start" 
+          justifyContent="space-between" 
           borderRadius={5}
           w="1200px"
           h="800px"
@@ -29,9 +89,9 @@ const EditUser = () => {
           position="relative"
           bgColor="gray.300"
           boxShadow="md"
-          p={5} // Agrega espacio interno a Flex para los formularios y los botones
+          p={5}
         >
-          <form>
+          <form onSubmit={handleFormSubmit}>
             <FormControl gap={5}>
               <FormLabel>Nombre</FormLabel>
               <Input
@@ -39,6 +99,9 @@ const EditUser = () => {
                 borderColor="black"
                 focusBorderColor="black"
                 type="text"
+                name="name"
+                value={formValues.name}
+                onChange={handleInputChange}
               />
               <FormLabel mt={4}>Apellido</FormLabel>
               <Input
@@ -46,6 +109,9 @@ const EditUser = () => {
                 borderColor="black"
                 focusBorderColor="black"
                 type="text"
+                name="lastname"
+                value={formValues.lastname}
+                onChange={handleInputChange}
                 w={"400px"}
               />
               <FormLabel mt={4}>Rol</FormLabel>
@@ -55,23 +121,15 @@ const EditUser = () => {
                 borderColor="black"
                 focusBorderColor="black"
                 type="text"
-              />
-              <FormLabel mt={4}>Correo</FormLabel>
-              <Input
-                variant="filled"
-                borderColor="black"
-                focusBorderColor="black"
-                type="email"
+                value={userData.role}
               />
             </FormControl>
-          </form>
 
-          <Flex justifyContent="flex-end">
-            {" "}
-            {/* Este Flex contiene los botones y los alinea a la derecha */}
+            <Flex justifyContent="flex-end">
             <Button colorScheme="teal" type="submit">
               Guardar
             </Button>
+            
             <Button
               colorScheme="red"
               ml={5}
@@ -81,6 +139,10 @@ const EditUser = () => {
               Cancelar
             </Button>
           </Flex>
+
+          </form>
+
+        
         </Flex>
       </MainContainer>
     </Layout>

@@ -58,6 +58,22 @@ export const createUser = async (name: string, lastname: string, email: string, 
     }
 }
 
+export const editUser = async (id: number, name: string, lastname: string, role: string) => {
+    try {
+        const response = await axios.patch(`http://localhost:3000/api/users/${id}`,
+        {
+            name,
+            lastname,
+            role
+        });
+
+        return response.data;
+    }catch(error){
+        console.error(error);
+        throw error;
+    }
+}
+
 export const deleteUser = async (id: number) => {
     try {
         const response = await axios.delete(`http://localhost:3000/api/users/${id}`);
